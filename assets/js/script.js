@@ -17,10 +17,13 @@ let currentElement = null;
 
 clearBtn.addEventListener('click', function () {
   // TODO: Clear the local storage and refresh the page
+  localStorage.clear();
+  location.reload();
 });
 
 function updateLocalStorage() {
   // TODO: Update the local storage with the tempStorageObject
+  localStorage.setItem('new item', JSON.stringify(tempStorageObject));
 }
 
 // ? Function to load from local storage. This function will be called on page load.
@@ -41,6 +44,14 @@ function loadFromLocalStorage() {
     });
 
     // TODO: Paint the stored text to the mood board
+    tempStorageObject.text.forEach((text) => {
+      const txt = document.createElement("p");
+      txt.textContent = textInput.value;
+      txt.style.left = text.left;
+      txt.style.top = text.top;
+      txt.classList.add('draggable');
+      moodBoardEl.appendChild(txt);
+    });
   }
 }
 
@@ -49,9 +60,12 @@ addImageBtn.addEventListener('click', function () {
   const imageUrl = imageUrlInput.value;
   if (imageUrl) {
     // TODO: Create an image element, add a class of draggable, set the src attribute to the image URL provided by the user, and append it to the body element
-
+    const img = document.createElement('img');
+    img.classList.add('draggable');
+    img.src = imageUrl;
+    document.body.appendChild(img);
     // TODO: Set the `currentElement` to the image element you create.
-
+    currentElement = img;
     // ? We attach the mouse move event listener to the document and the mood board div so that the element can be dragged anywhere on the screen and dropped only on the mood board div.
     attachMouseListeners();
   }
@@ -76,6 +90,8 @@ addTextBtn.addEventListener('click', function () {
 
 function attachMouseListeners() {
   // TODO: Attach the mouse move event listener to the document and the click listener to the mood board div so that the element can be dragged anywhere on the screen, but dropped only on the mood board div.
+  document.addEventListener("mousemove", mouseMoveHandler);
+  moodBoardEl.addEventListener('click', placeElementClickHandler);
 }
 
 // ? This is the event handler for the mouse move event. This will be called whenever the mouse is moved on the screen.
@@ -93,9 +109,13 @@ function mouseMoveHandler(event) {
 function placeElementClickHandler(event) {
   if (currentElement) {
     // TODO: Explain what getBoundingClientRect() does
+    // This method returns a DOMRect object that provides information about the size of an element
+    // and its position relative to the viewport. A DOMRect is the smallest rectangle that contains
+    // the entire element including padding & border-width.
     const moodBoardRect = moodBoardEl.getBoundingClientRect();
 
     // TODO: Explain what the following code does
+    // This sets the element's position.
     const left = `${event.clientX - moodBoardRect.left}px`;
     const top = `${event.clientY - moodBoardRect.top}px`;
 
@@ -104,12 +124,14 @@ function placeElementClickHandler(event) {
     currentElement.style.top = top;
 
     // TODO: Explain why we remove the draggable class from the element
+    // So we know which items are set.
     currentElement.classList.remove('draggable');
 
     // ? Append the element to the mood board with the already calculated position.
     moodBoardEl.appendChild(currentElement);
 
     // TODO: Explain what the `tagName` property is used for
+    // This is a read-only property that returns the tag name of the element on which it is called.
     if (currentElement.tagName === 'IMG') {
       // ? Push the image object to the tempStorageObject images property/array
       tempStorageObject.images.push({
