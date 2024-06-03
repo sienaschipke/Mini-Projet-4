@@ -23,7 +23,9 @@ clearBtn.addEventListener('click', function () {
 
 function updateLocalStorage() {
   // TODO: Update the local storage with the tempStorageObject
-  localStorage.setItem('new item', JSON.stringify(tempStorageObject));
+  if(!localStorage.getItem('new item')){
+    localStorage.setItem('new item', JSON.stringify(tempStorageObject));
+  }
 }
 
 // ? Function to load from local storage. This function will be called on page load.
